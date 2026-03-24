@@ -1,0 +1,13 @@
+# Contexto ao buildar com o Dockerfile da raiz (backend)
+.git
+.gitignore
+**/.env
+**/.env.*
+!**/.env.example
+
+**/node_modules
+**/dist
+
+frontend
+docs
+*.md
