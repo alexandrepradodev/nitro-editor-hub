@@ -12,6 +12,7 @@ import { ratesRoutes } from "./modules/rates/rates.routes";
 import { qualityRoutes } from "./modules/quality/quality.routes";
 import { closingRoutes } from "./modules/closing/closing.routes";
 import { performanceRoutes } from "./modules/performance/performance.routes";
+import { usersRoutes } from "./modules/users/users.routes";
 import { prisma } from "./lib/prisma";
 
 export const app = express();
@@ -53,6 +54,7 @@ app.get("/db-check", async (_req, res) => {
 
 app.use("/auth", authRoutes);
 app.use("/editors", editorsRoutes);
+app.use("/users", usersRoutes);
 app.use("/rates", ratesRoutes);
 app.use("/deliveries", deliveriesRoutes);
 app.use("/ad-creatives", adCreativesRoutes);

@@ -5,6 +5,17 @@ import type { DeliveryStatus, DeliveryType, Editor } from "./mockData";
 import CriativosAdsPage from "../criativos/CriativosAdsPage";
 import ConfiguracoesPage from "../configuracoes/ConfiguracoesPage";
 import QualidadeLevaPage from "../qualidade/QualidadeLevaPage";
+import {
+  IconConfiguracoes,
+  IconCriativos,
+  IconEntregasVsl,
+  IconFechamento,
+  IconHistorico,
+  IconPerformance,
+  IconQualidade,
+  IconSair,
+  IconValidacoes,
+} from "../../components/sidebar/SidebarIcons";
 import { apiRequest } from "../../lib/api";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -433,7 +444,10 @@ export default function EntregasPage(props: { onLogout: (reason?: string) => voi
         <div className="nav-section-block">
           <div className="nav-section-label">Principal</div>
           <div className={`nav-item ${location.pathname === "/performance" ? "active" : ""}`} onClick={() => navigate("/performance")}>
-            Performance
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconPerformance />
+            </span>
+            <span className="nav-item-label">Performance</span>
           </div>
         </div>
         <div className="nav-section-block">
@@ -442,16 +456,25 @@ export default function EntregasPage(props: { onLogout: (reason?: string) => voi
             className={`nav-item ${activeTab === "entregas" ? "active" : ""}`}
             onClick={() => setTabAndUrl("entregas")}
           >
-            Entregas VSL
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconEntregasVsl />
+            </span>
+            <span className="nav-item-label">Entregas VSL</span>
           </div>
           <div
             className={`nav-item ${activeTab === "criativos" ? "active" : ""}`}
             onClick={() => setTabAndUrl("criativos")}
           >
-            Entrega Criativos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconCriativos />
+            </span>
+            <span className="nav-item-label">Entrega Criativos</span>
           </div>
           <div className={`nav-item ${location.pathname === "/validacoes" ? "active" : ""}`} onClick={() => navigate("/validacoes")}>
-            Validações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconValidacoes />
+            </span>
+            <span className="nav-item-label">Validações</span>
           </div>
         </div>
         <div className="nav-section-block">
@@ -460,16 +483,25 @@ export default function EntregasPage(props: { onLogout: (reason?: string) => voi
             className={`nav-item ${activeTab === "qualidade" ? "active" : ""}`}
             onClick={() => setTabAndUrl("qualidade")}
           >
-            Qualidade Leva
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconQualidade />
+            </span>
+            <span className="nav-item-label">Qualidade Leva</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Financeiro</div>
           <div className={`nav-item ${location.pathname === "/fechamento" ? "active" : ""}`} onClick={() => navigate("/fechamento")}>
-            Fechamento
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconFechamento />
+            </span>
+            <span className="nav-item-label">Fechamento</span>
           </div>
           <div className={`nav-item ${location.pathname === "/fechamento/historico" ? "active" : ""}`} onClick={() => navigate("/fechamento/historico")}>
-            Histórico de Fechamentos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconHistorico />
+            </span>
+            <span className="nav-item-label">Histórico de Fechamentos</span>
           </div>
         </div>
         <div className="nav-section-block">
@@ -478,7 +510,10 @@ export default function EntregasPage(props: { onLogout: (reason?: string) => voi
             className={`nav-item ${activeTab === "configuracoes" ? "active" : ""}`}
             onClick={() => setTabAndUrl("configuracoes")}
           >
-            Configurações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconConfiguracoes />
+            </span>
+            <span className="nav-item-label">Configurações</span>
           </div>
         </div>
 
@@ -491,6 +526,9 @@ export default function EntregasPage(props: { onLogout: (reason?: string) => voi
           </div>
         </div>
         <button type="button" className="btn btn-ghost sidebar-logout-btn" onClick={() => props.onLogout()}>
+          <span className="nav-item-icon" aria-hidden="true">
+            <IconSair />
+          </span>
           Sair
         </button>
       </aside>

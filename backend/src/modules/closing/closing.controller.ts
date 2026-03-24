@@ -1,11 +1,25 @@
 import type { Request, Response } from "express";
 import { closePeriodSchema, closingPeriodParamsSchema, closingSummaryQuerySchema } from "./closing.schema";
+import { exportClosingSpreadsheet } from "./closing-export.service";
 import { closePeriod, getClosedPeriodByMonth, getClosingSummary, listClosedPeriods } from "./closing.service";
 
 export async function closingSummaryController(req: Request, res: Response) {
   const query = closingSummaryQuerySchema.parse(req.query);
   const data = await getClosingSummary(query);
   return res.status(200).json(data);
+}
+
+export async function closingExportController(req: Request, res: Response) {
+  try {
+    const query = closingSummaryQuerySchema.parse(req.query);
+    const { buffer, monthKey } = await exportClosingSpreadsheet(query);
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="fechamento_${monthKey}.xlsx"`);
+    return res.send(buffer);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Erro ao gerar exportacao" });
+  }
 }
 
 export async function closePeriodController(req: Request, res: Response) {

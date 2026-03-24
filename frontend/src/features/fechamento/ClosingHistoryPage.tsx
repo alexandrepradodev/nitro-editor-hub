@@ -1,5 +1,16 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  IconConfiguracoes,
+  IconCriativos,
+  IconEntregasVsl,
+  IconFechamento,
+  IconHistorico,
+  IconPerformance,
+  IconQualidade,
+  IconSair,
+  IconValidacoes,
+} from "../../components/sidebar/SidebarIcons";
 import { apiRequest } from "../../lib/api";
 import "../entregas/entregas.css";
 import "./fechamento.css";
@@ -67,43 +78,70 @@ export default function ClosingHistoryPage(props: { onLogout: (reason?: string) 
         <div className="nav-section-block">
           <div className="nav-section-label">Principal</div>
           <div className={`nav-item ${location.pathname === "/performance" ? "active" : ""}`} onClick={() => navigate("/performance")}>
-            Performance
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconPerformance />
+            </span>
+            <span className="nav-item-label">Performance</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Operação</div>
           <div className="nav-item" onClick={() => navigate("/")}>
-            Entregas VSL
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconEntregasVsl />
+            </span>
+            <span className="nav-item-label">Entregas VSL</span>
           </div>
           <div className="nav-item" onClick={() => navigate("/?tab=criativos")}>
-            Entrega Criativos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconCriativos />
+            </span>
+            <span className="nav-item-label">Entrega Criativos</span>
           </div>
           <div className={`nav-item ${location.pathname === "/validacoes" ? "active" : ""}`} onClick={() => navigate("/validacoes")}>
-            Validações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconValidacoes />
+            </span>
+            <span className="nav-item-label">Validações</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Qualidade</div>
           <div className="nav-item" onClick={() => navigate("/?tab=qualidade")}>
-            Qualidade Leva
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconQualidade />
+            </span>
+            <span className="nav-item-label">Qualidade Leva</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Financeiro</div>
           <div className={`nav-item ${location.pathname === "/fechamento" ? "active" : ""}`} onClick={() => navigate("/fechamento")}>
-            Fechamento
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconFechamento />
+            </span>
+            <span className="nav-item-label">Fechamento</span>
           </div>
           <div className={`nav-item ${location.pathname === "/fechamento/historico" ? "active" : ""}`} onClick={() => navigate("/fechamento/historico")}>
-            Histórico de Fechamentos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconHistorico />
+            </span>
+            <span className="nav-item-label">Histórico de Fechamentos</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Gestão</div>
           <div className="nav-item" onClick={() => navigate("/?tab=configuracoes")}>
-            Configurações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconConfiguracoes />
+            </span>
+            <span className="nav-item-label">Configurações</span>
           </div>
         </div>
         <button type="button" className="btn btn-ghost sidebar-logout-btn" onClick={() => props.onLogout()}>
+          <span className="nav-item-icon" aria-hidden="true">
+            <IconSair />
+          </span>
           Sair
         </button>
       </aside>

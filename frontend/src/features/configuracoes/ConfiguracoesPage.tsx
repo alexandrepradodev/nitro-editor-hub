@@ -4,6 +4,13 @@ import type { DeliveryType, Editor } from "../entregas/mockData";
 import "./configuracoes.css";
 import { apiRequest as authApiRequest } from "../../lib/api";
 
+type SystemUser = {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+};
+
 type CargoOption =
   | "Junior 01"
   | "Junior 02"
@@ -49,7 +56,7 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
   const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001";
   const token = localStorage.getItem("auth_token");
 
-  const [activeTab, setActiveTab] = useState<"editores" | "valores">("editores");
+  const [activeTab, setActiveTab] = useState<"editores" | "valores" | "usuarios">("editores");
   const [loading, setLoading] = useState(true);
   const [togglingEditorId, setTogglingEditorId] = useState<string | null>(null);
 
@@ -83,6 +90,14 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
     productionType: "",
     salaryFixed: "",
   });
+
+  const [users, setUsers] = useState<SystemUser[]>([]);
+  const [usersLoading, setUsersLoading] = useState(false);
+  const [usersListError, setUsersListError] = useState("");
+  const [userModalOpen, setUserModalOpen] = useState(false);
+  const [userForm, setUserForm] = useState({ name: "", email: "", password: "" });
+  const [userFormError, setUserFormError] = useState("");
+  const [userFormSuccess, setUserFormSuccess] = useState("");
 
   const initialsPreview = useMemo(() => {
     const fromNick = form.initials.trim();
@@ -170,6 +185,104 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
     void loadRates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, token]);
+
+  async function loadUsers() {
+    if (!token) return;
+    setUsersLoading(true);
+    setUsersListError("");
+    try {
+      const data = await authApiRequest<SystemUser[]>({
+        apiUrl,
+        path: "/users",
+        token,
+        onUnauthorized: props.onUnauthorized,
+      });
+      setUsers(data);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao carregar usuários";
+      setUsersListError(message);
+      console.error(error);
+    } finally {
+      setUsersLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab !== "usuarios") return;
+    void loadUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, token]);
+
+  function formatUserCreatedAt(iso: string) {
+    try {
+      return new Date(iso).toLocaleString("pt-BR", {
+        dateStyle: "short",
+        timeStyle: "short",
+      });
+    } catch {
+      return iso;
+    }
+  }
+
+  function userInitialLetter(name: string) {
+    const t = name.trim();
+    return t.length > 0 ? t[0]!.toUpperCase() : "?";
+  }
+
+  function openNewUserModal() {
+    setUserForm({ name: "", email: "", password: "" });
+    setUserFormError("");
+    setUserFormSuccess("");
+    setUserModalOpen(true);
+  }
+
+  async function onSubmitUser(e: FormEvent) {
+    e.preventDefault();
+    setUserFormError("");
+    setUserFormSuccess("");
+
+    if (!token) {
+      setUserFormError("Sessão expirada. Faça login novamente.");
+      return;
+    }
+
+    const name = userForm.name.trim();
+    const email = userForm.email.trim();
+    const password = userForm.password;
+
+    if (!name) {
+      setUserFormError("Informe o nome.");
+      return;
+    }
+    if (!email) {
+      setUserFormError("Informe o e-mail.");
+      return;
+    }
+    if (password.length < 4) {
+      setUserFormError("A senha deve ter pelo menos 4 caracteres.");
+      return;
+    }
+
+    try {
+      await authApiRequest<SystemUser>({
+        apiUrl,
+        path: "/users",
+        token,
+        onUnauthorized: props.onUnauthorized,
+        init: {
+          method: "POST",
+          body: JSON.stringify({ name, email, password }),
+        },
+      });
+      setUserModalOpen(false);
+      setUserForm({ name: "", email: "", password: "" });
+      setUserFormSuccess("Usuário cadastrado com sucesso.");
+      void loadUsers();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Erro ao cadastrar usuário";
+      setUserFormError(message);
+    }
+  }
 
   function openNewEditorModal() {
     setEditingId(null);
@@ -295,7 +408,7 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
       <div className="config-header">
         <div>
           <h1 className="page-title">Configurações</h1>
-          <div className="page-subtitle">Gerencie editores e cargos</div>
+          <div className="page-subtitle">Gerencie editores, valores de entrega e usuários do sistema</div>
         </div>
       </div>
 
@@ -311,6 +424,12 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
           onClick={() => setActiveTab("valores")}
         >
           Valores de Entrega
+        </div>
+        <div
+          className={`config-tab ${activeTab === "usuarios" ? "active" : ""}`}
+          onClick={() => setActiveTab("usuarios")}
+        >
+          Usuários
         </div>
       </div>
 
@@ -587,6 +706,52 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
         </section>
       )}
 
+      {activeTab === "usuarios" && (
+        <section className="config-section">
+          <div className="config-section-header">
+            <div className="config-section-title">Usuários do sistema</div>
+            <div className="config-section-action" onClick={openNewUserModal}>
+              + novo usuário
+            </div>
+          </div>
+          <div className="page-subtitle" style={{ marginBottom: 12, opacity: 0.75 }}>
+            Acesso ao Nitro Hub Editor (um único tipo de perfil).
+          </div>
+
+          {userFormSuccess && <div className="form-success">{userFormSuccess}</div>}
+          {usersListError && <div className="form-error">{usersListError}</div>}
+
+          {usersLoading ? (
+            <div className="config-loading">Carregando...</div>
+          ) : (
+            <div className="config-editors-list">
+              {users.map((u) => (
+                <div key={u.id} className="config-editor-row">
+                  <div className="config-ed-avatar c-cyan">
+                    <span>{userInitialLetter(u.name)}</span>
+                  </div>
+                  <div className="config-ed-info">
+                    <div className="config-ed-name">{u.name}</div>
+                    <div className="config-ed-meta">{u.email}</div>
+                  </div>
+                  <div className="config-ed-cargo">
+                    <span className="config-cargo-pill">Cadastro {formatUserCreatedAt(u.createdAt)}</span>
+                  </div>
+                </div>
+              ))}
+
+              <div className="config-add-editor-card" onClick={openNewUserModal}>
+                <div className="config-add-icon">+</div>
+                <div>
+                  <div className="config-add-label">Novo usuário</div>
+                  <div className="config-add-sub">Criar credenciais de acesso ao hub</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
       <div
         className={`modal-overlay ${modalOpen ? "open" : ""}`}
         style={{ opacity: modalOpen ? 1 : 0 }}
@@ -693,6 +858,69 @@ export default function ConfiguracoesPage(props: { onEditorsChanged?: () => void
             </button>
             <button type="submit" className="btn btn-primary">
               Salvar Editor
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div
+        className={`modal-overlay ${userModalOpen ? "open" : ""}`}
+        style={{ opacity: userModalOpen ? 1 : 0 }}
+        onClick={() => setUserModalOpen(false)}
+      >
+        <form className="modal config-modal" onSubmit={onSubmitUser} onClick={(e) => e.stopPropagation()}>
+          <div className="config-modal-top" />
+          <div className="modal-title">Novo usuário</div>
+          <div className="modal-sub">Preencha nome, e-mail e senha para acesso ao hub</div>
+
+          <div className="config-form-grid">
+            <div className="config-form-group config-form-full">
+              <div className="form-label">Nome</div>
+              <input
+                className="form-input"
+                type="text"
+                autoComplete="name"
+                value={userForm.name}
+                onChange={(e) => setUserForm((p) => ({ ...p, name: e.target.value }))}
+              />
+            </div>
+            <div className="config-form-group config-form-full">
+              <div className="form-label">E-mail</div>
+              <input
+                className="form-input"
+                type="email"
+                autoComplete="email"
+                value={userForm.email}
+                onChange={(e) => setUserForm((p) => ({ ...p, email: e.target.value }))}
+              />
+            </div>
+            <div className="config-form-group config-form-full">
+              <div className="form-label">Senha</div>
+              <input
+                className="form-input"
+                type="password"
+                autoComplete="new-password"
+                value={userForm.password}
+                onChange={(e) => setUserForm((p) => ({ ...p, password: e.target.value }))}
+              />
+            </div>
+          </div>
+
+          {userFormError && <div className="form-error">{userFormError}</div>}
+
+          <div className="modal-actions">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => {
+                setUserModalOpen(false);
+                setUserFormError("");
+              }}
+            >
+              Cancelar
+            </button>
+            <button type="submit" className="btn btn-primary">
+              Cadastrar
             </button>
           </div>
         </form>

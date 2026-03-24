@@ -103,6 +103,11 @@
   color: inherit;
 }
 
+.config-ed-avatar.c-cyan {
+  color: var(--cyan);
+  background: rgba(0, 229, 255, 0.12);
+}
+
 .config-ed-info {
   flex: 1;
 }

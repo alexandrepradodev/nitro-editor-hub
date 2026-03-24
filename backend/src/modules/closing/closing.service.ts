@@ -1,5 +1,6 @@
 import { ClosingPeriodStatus, DeliveryStatus, DeliveryType } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { mapEditorBonuses } from "../../lib/split-bonus";
 import type { ClosingSummaryQuery } from "./closing.schema";
 
 function resolveMonth(month?: string) {
@@ -8,25 +9,11 @@ function resolveMonth(month?: string) {
   return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
 }
 
-function toMonthRange(month: string) {
+export function toMonthRange(month: string) {
   const [year, monthNumber] = month.split("-").map(Number);
   const start = new Date(Date.UTC(year, monthNumber - 1, 1));
   const end = new Date(Date.UTC(year, monthNumber, 1));
   return { start, end };
-}
-
-function splitCents(totalCents: number, count: number) {
-  if (count <= 0) return [];
-  const base = Math.floor(totalCents / count);
-  const remainder = totalCents - base * count;
-  return Array.from({ length: count }, (_, idx) => (idx === count - 1 ? base + remainder : base));
-}
-
-function mapEditorBonuses(editorIds: string[], totalCents: number) {
-  return splitCents(totalCents, editorIds.length).map((bonusCents, idx) => ({
-    editorId: editorIds[idx],
-    bonusCents,
-  }));
 }
 
 type EditorClosing = {
@@ -109,6 +96,7 @@ async function buildOpenClosingSummary(month: string): Promise<ClosingSummaryRes
     const editorIds = delivery.editors.map((item) => item.editorId);
     const editorBonuses = mapEditorBonuses(editorIds, delivery.bonusCalculated);
     editorBonuses.forEach((item) => {
+      if (!item.editorId) return;
       deliveryBonusByEditor.set(item.editorId, (deliveryBonusByEditor.get(item.editorId) ?? 0) + item.bonusCents);
     });
   }

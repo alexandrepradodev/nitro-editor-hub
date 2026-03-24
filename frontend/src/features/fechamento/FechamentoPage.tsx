@@ -1,5 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+  IconConfiguracoes,
+  IconCriativos,
+  IconEntregasVsl,
+  IconFechamento,
+  IconHistorico,
+  IconPerformance,
+  IconQualidade,
+  IconSair,
+  IconValidacoes,
+} from "../../components/sidebar/SidebarIcons";
 import { apiRequest } from "../../lib/api";
 import "../entregas/entregas.css";
 import "./fechamento.css";
@@ -73,6 +84,8 @@ export default function FechamentoPage(props: { onLogout: (reason?: string) => v
   const [data, setData] = useState<ClosingSummaryResponse | null>(null);
   const [closeModalOpen, setCloseModalOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [exportError, setExportError] = useState("");
+  const [exportLoading, setExportLoading] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -119,40 +132,64 @@ export default function FechamentoPage(props: { onLogout: (reason?: string) => v
         <div className="nav-section-block">
           <div className="nav-section-label">Principal</div>
           <div className={`nav-item ${location.pathname === "/performance" ? "active" : ""}`} onClick={() => navigate("/performance")}>
-            Performance
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconPerformance />
+            </span>
+            <span className="nav-item-label">Performance</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Operação</div>
           <div className="nav-item" onClick={() => navigate("/")}>
-            Entregas VSL
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconEntregasVsl />
+            </span>
+            <span className="nav-item-label">Entregas VSL</span>
           </div>
           <div className="nav-item" onClick={() => navigate("/?tab=criativos")}>
-            Entrega Criativos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconCriativos />
+            </span>
+            <span className="nav-item-label">Entrega Criativos</span>
           </div>
           <div className={`nav-item ${location.pathname === "/validacoes" ? "active" : ""}`} onClick={() => navigate("/validacoes")}>
-            Validações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconValidacoes />
+            </span>
+            <span className="nav-item-label">Validações</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Qualidade</div>
           <div className="nav-item" onClick={() => navigate("/?tab=qualidade")}>
-            Qualidade Leva
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconQualidade />
+            </span>
+            <span className="nav-item-label">Qualidade Leva</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Financeiro</div>
           <div className={`nav-item ${location.pathname === "/fechamento" ? "active" : ""}`} onClick={() => navigate("/fechamento")}>
-            Fechamento
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconFechamento />
+            </span>
+            <span className="nav-item-label">Fechamento</span>
           </div>
           <div className={`nav-item ${location.pathname === "/fechamento/historico" ? "active" : ""}`} onClick={() => navigate("/fechamento/historico")}>
-            Histórico de Fechamentos
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconHistorico />
+            </span>
+            <span className="nav-item-label">Histórico de Fechamentos</span>
           </div>
         </div>
         <div className="nav-section-block">
           <div className="nav-section-label">Gestão</div>
           <div className="nav-item" onClick={() => navigate("/?tab=configuracoes")}>
-            Configurações
+            <span className="nav-item-icon" aria-hidden="true">
+              <IconConfiguracoes />
+            </span>
+            <span className="nav-item-label">Configurações</span>
           </div>
         </div>
         <div className="period-badge">
@@ -164,6 +201,9 @@ export default function FechamentoPage(props: { onLogout: (reason?: string) => v
           </div>
         </div>
         <button type="button" className="btn btn-ghost sidebar-logout-btn" onClick={() => props.onLogout()}>
+          <span className="nav-item-icon" aria-hidden="true">
+            <IconSair />
+          </span>
           Sair
         </button>
       </aside>
@@ -185,7 +225,13 @@ export default function FechamentoPage(props: { onLogout: (reason?: string) => v
             <button className="btn btn-ghost" onClick={() => navigate("/fechamento/historico")}>
               Histórico
             </button>
-            <button className="btn btn-ghost" onClick={() => setExportModalOpen(true)}>
+            <button
+              className="btn btn-ghost"
+              onClick={() => {
+                setExportError("");
+                setExportModalOpen(true);
+              }}
+            >
               Exportar
             </button>
             <button
@@ -296,13 +342,67 @@ export default function FechamentoPage(props: { onLogout: (reason?: string) => v
         </div>
       </div>
 
-      <div className={`modal-overlay ${exportModalOpen ? "open" : ""}`} onClick={() => setExportModalOpen(false)}>
+      <div
+        className={`modal-overlay ${exportModalOpen ? "open" : ""}`}
+        onClick={() => {
+          if (!exportLoading) setExportModalOpen(false);
+        }}
+      >
         <div className="modal" onClick={(e) => e.stopPropagation()}>
           <h2 className="modal-title">Exportar Fechamento</h2>
-          <p className="page-subtitle">MVP visual: ação de exportação será conectada em próxima fase.</p>
+          <p className="page-subtitle">
+            Baixe a planilha .xlsx do período <strong>{formatMonthLabel(selectedMonth)}</strong> com o resumo financeiro por editor e
+            o detalhe das entregas por gestor.
+          </p>
+          {exportError ? <div className="form-error">{exportError}</div> : null}
           <div className="modal-actions">
-            <button className="btn btn-ghost" onClick={() => setExportModalOpen(false)}>
+            <button type="button" className="btn btn-ghost" disabled={exportLoading} onClick={() => setExportModalOpen(false)}>
               Fechar
+            </button>
+            <button
+              type="button"
+              className="btn btn-primary"
+              disabled={exportLoading || !token}
+              onClick={() => {
+                if (!token) {
+                  setExportError("Sessão expirada. Faça login novamente.");
+                  return;
+                }
+                setExportError("");
+                setExportLoading(true);
+                void (async () => {
+                  try {
+                    const url = `${apiUrl}/closing/export?month=${encodeURIComponent(selectedMonth)}`;
+                    const res = await fetch(url, {
+                      headers: { Authorization: `Bearer ${token}` },
+                    });
+                    if (res.status === 401) {
+                      props.onLogout("Sessão expirada. Faça login novamente.");
+                      return;
+                    }
+                    if (!res.ok) {
+                      const maybeJson = await res.json().catch(() => null);
+                      const message = maybeJson?.message ? String(maybeJson.message) : `Erro ao exportar (${res.status})`;
+                      setExportError(message);
+                      return;
+                    }
+                    const blob = await res.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = objectUrl;
+                    a.download = `fechamento_${selectedMonth}.xlsx`;
+                    a.click();
+                    URL.revokeObjectURL(objectUrl);
+                    setExportModalOpen(false);
+                  } catch (e) {
+                    setExportError(e instanceof Error ? e.message : "Erro ao baixar planilha");
+                  } finally {
+                    setExportLoading(false);
+                  }
+                })();
+              }}
+            >
+              {exportLoading ? "Gerando…" : "Baixar planilha (.xlsx)"}
             </button>
           </div>
         </div>

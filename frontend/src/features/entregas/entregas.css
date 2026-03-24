@@ -59,12 +59,33 @@
 }
 
 .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   font-size: 12px;
   border-radius: 8px;
   padding: 10px;
   color: var(--text-secondary);
   cursor: pointer;
   user-select: none;
+}
+
+.nav-item-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.88;
+}
+
+.nav-item.active .nav-item-icon {
+  opacity: 1;
+}
+
+.nav-item-label {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
 }
 
 .nav-section-label {
@@ -147,6 +168,14 @@
 .sidebar-logout-btn {
   width: 100%;
   margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sidebar-logout-btn .nav-item-icon {
+  opacity: 0.9;
 }
 
 .entregas-root .main {

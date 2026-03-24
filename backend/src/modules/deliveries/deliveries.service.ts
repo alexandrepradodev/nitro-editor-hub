@@ -1,5 +1,6 @@
 import { DeliveryStatus, DeliveryType, Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { splitCents } from "../../lib/split-bonus";
 import { CreateDeliveryInput, ListDeliveriesQuery, UpdateDeliveryInput } from "./deliveries.schema";
 import { assertMonthIsOpen } from "../closing/closing-lock";
 
@@ -126,13 +127,6 @@ function toMonthRange(month: string) {
   const start = new Date(Date.UTC(year, mm - 1, 1));
   const end = new Date(Date.UTC(year, mm, 1));
   return { start, end };
-}
-
-function splitCents(totalCents: number, count: number) {
-  if (count <= 0) return [];
-  const base = Math.floor(totalCents / count);
-  const remainder = totalCents - base * count;
-  return Array.from({ length: count }, (_, idx) => (idx === count - 1 ? base + remainder : base));
 }
 
 function mapDelivery(item: DeliveryWithEditors | (Prisma.DeliveryGetPayload<{}> & { editors?: Array<{ editorId: string }> })) {

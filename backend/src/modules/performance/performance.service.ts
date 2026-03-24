@@ -1,5 +1,6 @@
 import { DeliveryType } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
+import { splitCents } from "../../lib/split-bonus";
 import type { PerformanceSummaryQuery } from "./performance.schema";
 
 function parseDateInput(dateInput?: string, fallback?: Date) {
@@ -20,13 +21,6 @@ function resolveDateRange(query: PerformanceSummaryQuery) {
 
 function monthKey(date: Date) {
   return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
-}
-
-function splitCents(totalCents: number, count: number) {
-  if (count <= 0) return [];
-  const base = Math.floor(totalCents / count);
-  const remainder = totalCents - base * count;
-  return Array.from({ length: count }, (_, idx) => (idx === count - 1 ? base + remainder : base));
 }
 
 export async function getPerformanceSummary(query: PerformanceSummaryQuery) {
@@ -157,8 +151,9 @@ export async function getPerformanceSummary(query: PerformanceSummaryQuery) {
     }),
   }));
 
-  const totalProduced = filteredDeliveries.length + filteredAds.reduce((acc, row) => acc + row.quantidade, 0) + validationsCount;
   const totalAds = filteredAds.reduce((acc, row) => acc + row.quantidade, 0);
+  /** Peças: entregas (linhas) + unidades de criativo; validações ficam em totalValidations. */
+  const totalProduced = filteredDeliveries.length + totalAds;
   const avgQuality = qualityBatches.length
     ? Number((qualityBatches.reduce((acc, row) => acc + row.accuracyPercent, 0) / qualityBatches.length).toFixed(1))
     : 0;

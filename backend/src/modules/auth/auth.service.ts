@@ -5,8 +5,9 @@ import { prisma } from "../../lib/prisma";
 import { LoginInput } from "./auth.schema";
 
 export async function loginUser(input: LoginInput) {
+  const email = input.email.trim().toLowerCase();
   const user = await prisma.user.findUnique({
-    where: { email: input.email },
+    where: { email },
   });
 
   if (!user) {
