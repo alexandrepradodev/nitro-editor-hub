@@ -16,6 +16,20 @@ async function main() {
     },
   });
 
+  const seedAlexPassword = process.env.SEED_ALEX_PASSWORD;
+  if (seedAlexPassword) {
+    const alexPasswordHash = await bcrypt.hash(seedAlexPassword, 10);
+    await prisma.user.upsert({
+      where: { email: "alexandre.prado@nitrocompany.co" },
+      update: { name: "Alexandre Prado", passwordHash: alexPasswordHash },
+      create: {
+        email: "alexandre.prado@nitrocompany.co",
+        name: "Alexandre Prado",
+        passwordHash: alexPasswordHash,
+      },
+    });
+  }
+
   const editors = [
     {
       name: "Alexandre",

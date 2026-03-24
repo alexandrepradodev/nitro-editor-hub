@@ -5,6 +5,8 @@ import EntregasPage from "./features/entregas/EntregasPage";
 import ValidacoesPage from "./features/validacoes/ValidacoesPage";
 import FechamentoPage from "./features/fechamento/FechamentoPage";
 import ClosingHistoryPage from "./features/fechamento/ClosingHistoryPage";
+import Starfield from "./components/Starfield";
+import LoginSpaceBackdrop from "./components/LoginSpaceBackdrop";
 import "./App.css";
 
 const PerformancePage = lazy(() => import("./features/performance/PerformancePage"));
@@ -51,9 +53,16 @@ function App() {
 
   if (!token) {
     return (
-      <main className="login-shell">
+      <main className="login-shell login-shell--spatial">
+        <LoginSpaceBackdrop />
+        <Starfield anchored />
         <form className="login-card" onSubmit={onLogin}>
-          <h1>Nitro Hub</h1>
+          <div className="logo">
+            <div className="logo-text">
+              NITRO<span>HUB</span>
+            </div>
+            <div className="logo-sub">Editor Performance</div>
+          </div>
           <p>Login de acesso ao sistema</p>
           <label>
             Email
@@ -74,16 +83,19 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app-shell">
-        <Suspense fallback={<div className="loading-overlay">Carregando...</div>}>
-          <Routes>
-            <Route path="/" element={<EntregasPage onLogout={onLogout} />} />
-            <Route path="/validacoes" element={<ValidacoesPage onLogout={onLogout} />} />
-            <Route path="/fechamento" element={<FechamentoPage onLogout={onLogout} />} />
-            <Route path="/fechamento/historico" element={<ClosingHistoryPage onLogout={onLogout} />} />
-            <Route path="/performance" element={<PerformancePage onLogout={onLogout} />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
+        <Starfield />
+        <div className="app-shell-content">
+          <Suspense fallback={<div className="loading-overlay">Carregando...</div>}>
+            <Routes>
+              <Route path="/" element={<EntregasPage onLogout={onLogout} />} />
+              <Route path="/validacoes" element={<ValidacoesPage onLogout={onLogout} />} />
+              <Route path="/fechamento" element={<FechamentoPage onLogout={onLogout} />} />
+              <Route path="/fechamento/historico" element={<ClosingHistoryPage onLogout={onLogout} />} />
+              <Route path="/performance" element={<PerformancePage onLogout={onLogout} />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
+        </div>
       </div>
     </BrowserRouter>
   );

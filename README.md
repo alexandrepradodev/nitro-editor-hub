@@ -66,3 +66,5 @@ Aplicacao em `http://localhost:5173`
 
 - Email: `admin@nitrohub.local`
 - Senha: `admin123`
+
+Documentação funcional: [docs/NITRO_HUB_EDITOR.md](docs/NITRO_HUB_EDITOR.md).
