@@ -1,0 +1,121 @@
+.fechamento-main .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-banner {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.status-banner.open {
+  background: rgba(34, 197, 94, 0.06);
+}
+
+.status-banner.closed {
+  background: rgba(160, 160, 170, 0.08);
+}
+
+.sb-dot.closed {
+  background: var(--text-secondary);
+  box-shadow: none;
+}
+
+.pending-alert {
+  border: 1px solid rgba(234, 179, 8, 0.25);
+  background: rgba(234, 179, 8, 0.08);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  color: var(--yellow);
+  font-size: 12px;
+}
+
+.fechamento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.fechamento-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-card);
+  overflow: hidden;
+}
+
+.fechamento-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.fechamento-editor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fechamento-editor-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fechamento-editor-role {
+  font-size: 10px;
+  color: var(--text-secondary);
+}
+
+.fechamento-liquido {
+  font-family: var(--mono);
+  font-size: 18px;
+  color: var(--green);
+}
+
+.fechamento-breakdown {
+  padding: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.fechamento-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.fechamento-breakdown > div span {
+  color: var(--text-secondary);
+}
+
+.fechamento-breakdown > div strong {
+  font-family: var(--mono);
+}
+
+.fechamento-breakdown .subtotal {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.fechamento-breakdown .total {
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.fechamento-breakdown .total strong {
+  color: var(--green);
+}
+
+@media (max-width: 1000px) {
+  .fechamento-grid {
+    grid-template-columns: 1fr;
+  }
+}

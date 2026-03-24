@@ -1,0 +1,442 @@
+.config-root {
+  padding-top: 4px;
+}
+
+.config-header {
+  margin-bottom: 18px;
+}
+
+.config-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 6px;
+  width: fit-content;
+  backdrop-filter: blur(12px);
+}
+
+.config-tab {
+  padding: 10px 16px;
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  cursor: pointer;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+}
+
+.config-tab.active {
+  border-color: rgba(0, 229, 255, 0.15);
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--cyan);
+}
+
+.config-section {
+  background: transparent;
+}
+
+.config-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.config-section-title {
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  opacity: 0.85;
+}
+
+.config-section-action {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--cyan);
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.config-section-action:hover {
+  opacity: 1;
+}
+
+.config-loading {
+  font-family: var(--mono);
+  color: var(--text-secondary);
+  padding: 12px 4px;
+}
+
+.config-editors-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.config-editor-row {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.config-ed-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent; /* colorClass (c-cyan/c-violet/...) defines background */
+  color: inherit;
+}
+
+.config-ed-info {
+  flex: 1;
+}
+
+.config-ed-name {
+  font-family: var(--display);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  margin-bottom: 2px;
+}
+
+.config-ed-meta {
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.config-status-pill {
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 1px solid transparent;
+}
+
+.config-status-pill.active {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.config-status-pill.inactive {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.config-ed-cargo {
+  min-width: 110px;
+}
+
+.config-cargo-pill {
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 9px;
+  font-family: var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.config-ed-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.config-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.config-icon-btn:hover {
+  border-color: var(--border-bright);
+  color: var(--text-primary);
+}
+
+.config-danger {
+  color: var(--red);
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.config-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+.config-toggle-btn {
+  width: 44px;
+  height: 24px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+}
+
+.config-toggle-track {
+  position: relative;
+  width: 36px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background-color 0.2s;
+}
+
+.config-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  transition: transform 0.2s;
+}
+
+.config-toggle-btn.active {
+  border-color: rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.config-toggle-btn.active .config-toggle-track {
+  background: rgba(34, 197, 94, 0.35);
+}
+
+.config-toggle-btn.active .config-toggle-thumb {
+  transform: translateX(18px);
+}
+
+.config-toggle-btn.inactive {
+  border-color: rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.config-toggle-btn.inactive .config-toggle-track {
+  background: rgba(245, 158, 11, 0.3);
+}
+
+.config-toggle-btn:hover {
+  border-color: var(--border-bright);
+}
+
+.config-toggle-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--border-focus);
+}
+
+.config-toggle-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.config-add-editor-card {
+  border: 1px dashed rgba(0, 229, 255, 0.2);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  color: var(--text-secondary);
+}
+
+.config-add-editor-card:hover {
+  border-color: rgba(0, 229, 255, 0.4);
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+.config-add-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px dashed rgba(0, 229, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.config-add-label {
+  font-family: var(--display);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.config-add-sub {
+  font-size: 10px;
+  font-family: var(--mono);
+  margin-top: 3px;
+  opacity: 0.5;
+}
+
+.config-empty {
+  font-family: var(--mono);
+  color: var(--text-secondary);
+  padding: 12px 0;
+}
+
+.config-modal {
+  width: 440px;
+}
+
+.config-modal-top {
+  width: 100%;
+  height: 2px;
+  background: var(--cyan);
+  border-radius: 2px;
+  margin-bottom: 18px;
+}
+
+.config-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.config-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.config-form-full {
+  grid-column: 1 / -1;
+}
+
+.avatar-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--bg-elevated);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.preview-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display);
+  font-size: 14px;
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--cyan);
+  letter-spacing: 1px;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+}
+
+.preview-info {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+}
+
+.config-rates-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.config-rate-card {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 14px;
+}
+
+.config-rate-title {
+  font-family: var(--display);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.config-rate-input {
+  width: 100%;
+  background: #0a0a18;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  outline: none;
+  font-family: var(--mono);
+  font-size: 13px;
+  text-align: right;
+}
+
+.config-rate-input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.05);
+}
+
+.config-rate-sub {
+  margin-top: 8px;
+  font-size: 10px;
+  font-family: var(--mono);
+  color: var(--text-secondary);
+}
+
+.config-rate-actions {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.form-success {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+  background: rgba(34, 197, 94, 0.08);
+  color: #22c55e;
+  font-family: var(--mono);
+  font-size: 12px;
+}

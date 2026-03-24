@@ -1,0 +1,258 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DeliveryType {
+  VSL
+  Lead
+  ML
+  Troca
+  Upsell
+}
+
+enum DeliveryStatus {
+  Avaliado
+  Pendente
+  Fallback
+  Fixo
+}
+
+enum AdCreativeMediaType {
+  Video
+  Image
+}
+
+enum QualityLevaFormat {
+  IG
+  GO
+  YT
+  FB
+}
+
+enum ClosingPeriodStatus {
+  Open
+  Closed
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Editor {
+  id        String           @id @default(cuid())
+  name      String
+  initials  String           @unique
+  role      String
+  isActive  Boolean          @default(true) @map("is_active")
+  colorClass String          @map("color_class")
+  salaryFixed Int?           @map("salary_fixed")
+  productionType String?     @map("production_type")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+  deliveries DeliveryEditor[]
+  adCreatives AdCreative[]
+  qualityBatches QualityBatch[]
+
+  @@map("editors")
+}
+
+model QualityBatch {
+  id              String             @id @default(cuid())
+  editorId        String             @map("editor_id")
+  date            DateTime
+  monthKey        String             @map("month_key")
+  totalLevas      Int                @map("total_levas")
+  totalPoints     Int                @map("total_points")
+  maxPoints       Int                @map("max_points")
+  accuracyPercent Int                @map("accuracy_percent")
+  bonusCents      Int                @map("bonus_cents")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+
+  editor          Editor             @relation(fields: [editorId], references: [id], onDelete: Restrict)
+  items           QualityBatchItem[]
+
+  @@index([monthKey])
+  @@index([editorId, monthKey])
+  @@map("quality_batches")
+}
+
+model QualityBatchItem {
+  id         String            @id @default(cuid())
+  batchId    String            @map("batch_id")
+  project    String
+  levaNumber String            @map("leva_number")
+  format     QualityLevaFormat
+  note       Int
+  createdAt  DateTime          @default(now()) @map("created_at")
+  updatedAt  DateTime          @updatedAt @map("updated_at")
+
+  batch      QualityBatch      @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  @@index([batchId])
+  @@map("quality_batch_items")
+}
+
+model DeliveryRate {
+  id        String       @id @default(cuid())
+  type      DeliveryType @unique
+  baseValue Int          @map("base_value")
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+
+  @@map("delivery_rates")
+}
+
+model AdCreativeRate {
+  id        String             @id @default(cuid())
+  mediaType AdCreativeMediaType @unique @map("media_type")
+  baseValue Int                @map("base_value")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+
+  @@map("ad_creative_rates")
+}
+
+model Delivery {
+  id              String           @id @default(cuid())
+  taskId          String?          @map("task_id")
+  title           String           @default("")
+  type            DeliveryType
+  date            DateTime
+  status          DeliveryStatus
+  retrabalho      Int?
+  qualidade       Int?
+  prazo           Int?
+  kpiTotal        Int?             @map("kpi_total")
+  tierLabel       String?          @map("tier_label")
+  baseValueSnapshot Int            @default(0) @map("base_value_snapshot")
+  isManualValue   Boolean          @default(false) @map("is_manual_value")
+  bonusCalculated Int              @map("bonus_calculated")
+  investmentUsd   Float?           @map("investment_usd")
+  roas            Float?
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  editors         DeliveryEditor[]
+
+  @@index([type])
+  @@index([date])
+  @@index([status])
+  @@map("deliveries")
+}
+
+model DeliveryEditor {
+  deliveryId String   @map("delivery_id")
+  editorId   String   @map("editor_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+  editor     Editor   @relation(fields: [editorId], references: [id], onDelete: Cascade)
+
+  @@id([deliveryId, editorId])
+  @@map("delivery_editors")
+}
+
+model AdCreative {
+  id           String   @id @default(cuid())
+  editorId     String   @map("editor_id")
+  projeto      String
+  leva         String
+  plataforma   String   @default("FB")
+  mediaType    AdCreativeMediaType @default(Image) @map("media_type")
+  quantidade   Int      @default(1)
+  unitValueSnapshot Int @default(0) @map("unit_value_snapshot")
+  lineTotalValue Int    @default(0) @map("line_total_value")
+  isManualValue Boolean @default(false) @map("is_manual_value")
+  taskCode     String?  @map("task_code")
+  date         DateTime
+  observacoes  String?
+  investmentUsd Float?  @map("investment_usd")
+  roas         Float?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  editor       Editor   @relation(fields: [editorId], references: [id], onDelete: Cascade)
+  qualityReview QualityReview?
+
+  @@index([editorId])
+  @@index([date])
+  @@map("ad_creatives")
+}
+
+model QualityReview {
+  id            String   @id @default(cuid())
+  adCreativeId  String   @unique @map("ad_creative_id")
+  notePercent   Int?     @map("note_percent")
+  observation   String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  adCreative    AdCreative @relation(fields: [adCreativeId], references: [id], onDelete: Cascade)
+
+  @@index([notePercent])
+  @@map("quality_reviews")
+}
+
+model ClosingPeriod {
+  id                    String                @id @default(cuid())
+  monthKey              String                @unique @map("month_key")
+  status                ClosingPeriodStatus   @default(Closed)
+  closedAt              DateTime              @default(now()) @map("closed_at")
+  closedByUserId        String                @map("closed_by_user_id")
+  pendingDeliveries     Int                   @default(0) @map("pending_deliveries")
+  pendingAlertMessage   String                @default("") @map("pending_alert_message")
+  totalSalaryCents      Int                   @default(0) @map("total_salary_cents")
+  totalBonusCents       Int                   @default(0) @map("total_bonus_cents")
+  totalNetCents         Int                   @default(0) @map("total_net_cents")
+  deliveriesCount       Int                   @default(0) @map("deliveries_count")
+  vslLeadMlUpsellCount  Int                   @default(0) @map("vsl_lead_ml_upsell_count")
+  adCreativesCount      Int                   @default(0) @map("ad_creatives_count")
+  qualityBatchesCount   Int                   @default(0) @map("quality_batches_count")
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime              @updatedAt @map("updated_at")
+  editorSnapshots       ClosingEditorSnapshot[]
+
+  @@index([monthKey])
+  @@index([closedAt])
+  @@map("closing_periods")
+}
+
+model ClosingEditorSnapshot {
+  id                 String        @id @default(cuid())
+  closingPeriodId    String        @map("closing_period_id")
+  editorId           String        @map("editor_id")
+  name               String
+  initials           String
+  role               String
+  colorClass         String        @map("color_class")
+  productionType     String?       @map("production_type")
+  salaryCents        Int           @default(0) @map("salary_cents")
+  deliveryBonusCents Int           @default(0) @map("delivery_bonus_cents")
+  adBonusCents       Int           @default(0) @map("ad_bonus_cents")
+  qualityBonusCents  Int           @default(0) @map("quality_bonus_cents")
+  subtotalCents      Int           @default(0) @map("subtotal_cents")
+  netTotalCents      Int           @default(0) @map("net_total_cents")
+  createdAt          DateTime      @default(now()) @map("created_at")
+  updatedAt          DateTime      @updatedAt @map("updated_at")
+  closingPeriod      ClosingPeriod @relation(fields: [closingPeriodId], references: [id], onDelete: Cascade)
+
+  @@index([closingPeriodId])
+  @@index([editorId])
+  @@map("closing_editor_snapshots")
+}
