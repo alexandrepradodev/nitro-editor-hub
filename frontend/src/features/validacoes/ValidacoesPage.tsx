@@ -199,13 +199,13 @@ export default function ValidacoesPage(props: { onLogout: (reason?: string) => v
       apiRequest<Editor[]>({ apiUrl, path: "/editors", token, onUnauthorized: unauthorized }),
       apiRequest<DeliveryRecord[]>({
         apiUrl,
-        path: `/deliveries?month=${encodeURIComponent(month)}`,
+        path: `/deliveries?month=${encodeURIComponent(month)}&isValidation=true`,
         token,
         onUnauthorized: unauthorized,
       }),
       apiRequest<AdCreativeRecord[]>({
         apiUrl,
-        path: `/ad-creatives?month=${encodeURIComponent(month)}`,
+        path: `/ad-creatives?month=${encodeURIComponent(month)}&isValidation=true`,
         token,
         onUnauthorized: unauthorized,
       }),
@@ -400,6 +400,7 @@ export default function ValidacoesPage(props: { onLogout: (reason?: string) => v
           date: form.date,
           investmentUsd: investment,
           roas,
+          isValidation: true,
         };
         await apiRequest({
           apiUrl,
@@ -420,6 +421,7 @@ export default function ValidacoesPage(props: { onLogout: (reason?: string) => v
           bonusManual: bonusCents,
           investmentUsd: investment,
           roas,
+          isValidation: true,
         };
         await apiRequest({
           apiUrl,

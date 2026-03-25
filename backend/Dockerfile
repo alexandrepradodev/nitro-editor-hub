@@ -43,5 +43,8 @@ RUN npx prisma generate
 
 EXPOSE 3001
 
-# Migrations: rode no deploy com DATABASE_URL, ex.: npx prisma migrate deploy
-CMD ["node", "dist/server.js"]
+# Executa migrations automaticamente antes de subir a API.
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

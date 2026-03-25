@@ -5,6 +5,7 @@ export const adCreativeMediaTypeSchema = z.enum(["Video", "Image"]);
 
 export const listAdCreativesQuerySchema = z.object({
   month: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  isValidation: z.coerce.boolean().optional(),
 });
 
 export const createAdCreativeSchema = z.object({
@@ -20,6 +21,7 @@ export const createAdCreativeSchema = z.object({
   observacoes: z.string().trim().max(1000).optional(),
   investmentUsd: z.number().min(0).optional(),
   roas: z.number().min(0).optional(),
+  isValidation: z.boolean().optional(),
 });
 
 export const updateAdCreativeSchema = createAdCreativeSchema.partial();

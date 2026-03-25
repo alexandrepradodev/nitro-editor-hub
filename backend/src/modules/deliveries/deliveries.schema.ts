@@ -9,6 +9,7 @@ export const listDeliveriesQuerySchema = z.object({
   status: deliveryStatusSchema.optional(),
   editorId: z.string().optional(),
   month: z.string().regex(/^\d{4}-\d{2}$/).optional(),
+  isValidation: z.coerce.boolean().optional(),
   search: z.string().optional(),
 });
 
@@ -24,6 +25,7 @@ export const createDeliverySchema = z.object({
   bonusManual: z.number().int().min(0).optional(),
   investmentUsd: z.number().min(0).optional(),
   roas: z.number().min(0).optional(),
+  isValidation: z.boolean().optional(),
 });
 
 export const updateDeliverySchema = createDeliverySchema.partial().extend({

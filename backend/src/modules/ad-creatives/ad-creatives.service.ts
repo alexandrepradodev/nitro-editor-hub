@@ -72,6 +72,10 @@ export async function listAdCreatives(query: ListAdCreativesQuery) {
     const { start, end } = toMonthRange(query.month);
     where.date = { gte: start, lt: end };
   }
+  // A tela de Validações sempre pede registros originados dela.
+  if (query.isValidation !== undefined) {
+    where.isValidation = true;
+  }
 
   const data = await prisma.adCreative.findMany({
     where: where as never,
@@ -105,6 +109,7 @@ export async function createAdCreative(input: CreateAdCreativeInput) {
       unitValueSnapshot: effectiveUnitValue,
       lineTotalValue,
       isManualValue,
+      isValidation: input.isValidation ?? false,
       taskCode: input.taskCode ?? null,
       date: new Date(input.date),
       observacoes: input.observacoes ?? null,

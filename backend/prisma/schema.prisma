@@ -145,6 +145,7 @@ model Delivery {
   tierLabel       String?          @map("tier_label")
   baseValueSnapshot Int            @default(0) @map("base_value_snapshot")
   isManualValue   Boolean          @default(false) @map("is_manual_value")
+  isValidation    Boolean          @default(false) @map("is_validation")
   bonusCalculated Int              @map("bonus_calculated")
   investmentUsd   Float?           @map("investment_usd")
   roas            Float?
@@ -180,6 +181,7 @@ model AdCreative {
   unitValueSnapshot Int @default(0) @map("unit_value_snapshot")
   lineTotalValue Int    @default(0) @map("line_total_value")
   isManualValue Boolean @default(false) @map("is_manual_value")
+  isValidation  Boolean @default(false) @map("is_validation")
   taskCode     String?  @map("task_code")
   date         DateTime
   observacoes  String?

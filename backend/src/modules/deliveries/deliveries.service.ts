@@ -168,6 +168,10 @@ export async function listDeliveries(query: ListDeliveriesQuery) {
     const { start, end } = toMonthRange(query.month);
     where.date = { gte: start, lt: end };
   }
+  // A tela de Validações sempre pede registros originados dela.
+  if (query.isValidation !== undefined) {
+    where.isValidation = true;
+  }
 
   const data = await prisma.delivery.findMany({
     where,
@@ -186,8 +190,11 @@ export async function createDelivery(input: CreateDeliveryInput) {
   }
   const baseValueSnapshot = await getBaseRate(input.type);
   const computed = await computeBonusAndStatus({
-    ...input,
+    type: input.type,
     baseValue: baseValueSnapshot,
+    retrabalho: input.retrabalho,
+    qualidade: input.qualidade,
+    prazo: input.prazo,
   });
   const isManualValue = typeof input.bonusManual === "number";
   const finalBonus = isManualValue ? (input.bonusManual ?? computed.bonusCalculated) : computed.bonusCalculated;
@@ -203,6 +210,7 @@ export async function createDelivery(input: CreateDeliveryInput) {
       prazo: input.prazo,
       baseValueSnapshot,
       isManualValue,
+      isValidation: input.isValidation ?? false,
       kpiTotal: computed.kpiTotal,
       tierLabel: computed.tierLabel,
       bonusCalculated: finalBonus,
